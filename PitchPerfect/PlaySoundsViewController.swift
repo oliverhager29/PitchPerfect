@@ -69,6 +69,19 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         playAudioWithVariablePitch(-1000.0)
     }
     
+    /// play reverb audio
+    /// :param: UIButton pressed play reverb audio button
+    @IBAction func playReverbAudio(sender: UIButton) {
+        playAudioWithReverb(AVAudioUnitReverbPreset.LargeHall, wetDryMix: 100.0)
+    }
+    
+    /// play echo audio
+    /// :param: UIButton pressed play echo audio button
+    @IBAction func playEchoAudio(sender: UIButton) {
+        playAudioWithDelay(NSTimeInterval(2.0), feedback: 50, lowPassCutoff: 18000, wetDryMix: 100)
+    }
+    
+    
     /// initialize audio re-play
     func initAudio() {
         var error: NSError?
@@ -134,8 +147,51 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     
     /// play audio with variable pitch (used in chipmunk and darthvader re-play)
     ///
-    /// :param: Float pitch
+    /// :param: Float pitch adding or subtracting cents
     func playAudioWithVariablePitch(pitch: Float) {
+        //create pitch effect node
+        var auTimePitch = AVAudioUnitTimePitch()
+        //set pitch
+        auTimePitch.pitch = pitch
+        //we do not change the audio play rate
+        auTimePitch.rate = 1.0
+        playAudioWithEffect(auTimePitch)
+    }
+    
+    /// play audio with reverb
+    ///
+    /// :param: AVAudioUnitReverbPreset preset for reverb
+    /// :param: Float wet dry mix (0 (dry) to 100 (wet) percent)
+    func playAudioWithReverb(preset: AVAudioUnitReverbPreset, wetDryMix: Float) {
+        //create reverb effect node
+        var auReverb = AVAudioUnitReverb()
+        //set reverb preset
+        auReverb.loadFactoryPreset(AVAudioUnitReverbPreset.Cathedral)
+        //set wet dry mix
+        auReverb.wetDryMix=wetDryMix
+        playAudioWithEffect(auReverb)
+    }
+
+    /// play audio with delay
+    ///
+    /// :param: NSTimeInterval delay time (0 to 2 seconds)
+    /// :param: Float feedback (-100 to 100 percent)
+    /// :param: Float low pass cutoff (10 Hz to half of sample frequency)
+    /// :param: Float wet dry mix (0 (dry) to 100 (wet) percent)
+    func playAudioWithDelay(delayTime: NSTimeInterval, feedback: Float, lowPassCutoff: Float, wetDryMix: Float) {
+        //create delay effect node
+        var auDelay = AVAudioUnitDelay()
+        auDelay.delayTime = delayTime
+        auDelay.feedback = feedback
+        auDelay.lowPassCutoff = lowPassCutoff
+        auDelay.wetDryMix = wetDryMix
+        playAudioWithEffect(auDelay);
+    }
+    
+    /// play audio with variable pitch (used in chipmunk and darthvader re-play)
+    ///
+    /// :param: AVAudioUnit effect
+    func playAudioWithEffect(effect: AVAudioUnit) {
         if(self.avPlayer != nil) {
             //stop audio (other audio may not be finished)
             stopAudio()
@@ -150,18 +206,12 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             mixer.volume = 1.0
             //attached audio player node to audio engine
             self.avEngine.attachNode(avPlayerNode)
-            //create pitch effect node
-            var auTimePitch = AVAudioUnitTimePitch()
-            //set pitch
-            auTimePitch.pitch = pitch
-            //we do not change the audio play rate
-            auTimePitch.rate = 1.0
             //attach effect node to audio engine
-            self.avEngine.attachNode(auTimePitch)
+            self.avEngine.attachNode(effect)
             // connect audio player node to audio effect node
-            self.avEngine.connect(avPlayerNode, to: auTimePitch, format: mixer.outputFormatForBus(0))
+            self.avEngine.connect(avPlayerNode, to: effect, format: mixer.outputFormatForBus(0))
             //connect audio effect node to mixer
-            self.avEngine.connect(auTimePitch, to: mixer, format: mixer.outputFormatForBus(0))
+            self.avEngine.connect(effect, to: mixer, format: mixer.outputFormatForBus(0))
             var error: NSError? = nil
             //set recording file in audio player node
             let file = AVAudioFile(forReading: receivedAudio.recordingFilePath, error: &error)
@@ -178,7 +228,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             self.avPlayerNode.play()
         }
     }
-    
+
     /// Stop audio
     ///
     /// :param: UIButton pressed stop audio button

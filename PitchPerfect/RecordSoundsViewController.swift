@@ -19,6 +19,8 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     @IBOutlet weak var stopButton: UIButton!
     //recording label
     @IBOutlet weak var recordingLabel: UILabel!
+    // pause or resume recording button
+    @IBOutlet weak var pauseResumeRecordingButton: UIButton!
     
     //audio recorder
     var audioRecorder: AVAudioRecorder!
@@ -27,6 +29,8 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     var recordedAudio: RecordedAudio!
     
     //constants
+    let PAUSE_RECORDING = "Pause Recording"
+    let RESUME_RECORDING = "Resume Recording"
     let TAP_TO_RECORD = "Tap to Record"
     let RECORDING_IN_PROGRESS = "Recording in progress"
     
@@ -48,6 +52,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     override func viewWillAppear(animated: Bool) {
         stopButton.hidden = true
         recordingLabel.text = TAP_TO_RECORD
+        pauseResumeRecordingButton.hidden = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -70,6 +75,9 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         //show stop recording button
         stopButton.hidden=false
         recordButton.enabled=false
+        pauseResumeRecordingButton.hidden = false
+        pauseResumeRecordingButton.setImage(UIImage(named: "pause"), forState:UIControlState.Normal)
+
         //construct path to audio recording file
         let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
         //include timestamp in file name in order to make it unique
@@ -100,11 +108,25 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         //hide stop button
         stopButton.hidden=true
         recordButton.enabled=true
-        
+        pauseResumeRecordingButton.hidden = true
         //stop audio recording
         audioRecorder.stop()
         var audioSession = AVAudioSession.sharedInstance()
         audioSession.setActive(false, error: nil)
+    }
+    
+    /// pause / resume recording
+    ///
+    /// :param: UIButton press pause /resume recording button
+    @IBAction func pauseResumeRecording(sender: UIButton) {
+        if(audioRecorder.recording) {
+            audioRecorder.pause()
+            pauseResumeRecordingButton.setImage(UIImage(named: "resume"), forState:UIControlState.Normal)
+        }
+        else {
+            audioRecorder.record()
+            pauseResumeRecordingButton.setImage(UIImage(named: "pause"),  forState:UIControlState.Normal)
+        }
     }
     
     /// handle finishing of recording
