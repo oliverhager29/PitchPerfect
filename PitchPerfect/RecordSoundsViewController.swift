@@ -9,36 +9,41 @@ import Foundation
 import UIKit
 import AVFoundation
 
-//View controller for the audio recording page
-//The view controller implements the AVAudioRecorderDelegate interface in order to intercept
-//the completion of the audio recording
+/// View controller for the audio recording page
+/// The view controller implements the AVAudioRecorderDelegate interface in order to intercept
+/// the completion of the audio recording
 class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
-    //record button
+    /// record button
     @IBOutlet weak var recordButton: UIButton!
-    //stop button
+    /// stop button
     @IBOutlet weak var stopButton: UIButton!
-    //recording label
+    /// recording label
     @IBOutlet weak var recordingLabel: UILabel!
-    // pause or resume recording button
+    /// pause or resume recording button
     @IBOutlet weak var pauseResumeRecordingButton: UIButton!
     
-    //audio recorder
+    /// audio recorder
     var audioRecorder: AVAudioRecorder!
     
-    //recorded audio
+    /// recorded audio
     var recordedAudio: RecordedAudio!
     
-    //constants
-    let PAUSE_RECORDING = "Pause Recording"
-    let RESUME_RECORDING = "Resume Recording"
+    /// tap to record label text
     let TAP_TO_RECORD = "Tap to Record"
+    
+    /// recording in progress label text
     let RECORDING_IN_PROGRESS = "Recording in progress"
     
+    /// date format for timestamp in recording file name
     let DATE_FORMAT = "ddMMyyyy-HHmmss"
+    
+    /// recording file extension
     let WAV_EXTENSION = ".wav"
     
+    /// segue identifier
     let SEG_IDENTIFIER = "stopRecording"
     
+    /// recording error message
     let RECORDING_ERROR = "Recording was not successful"
     
     /// view did load

@@ -10,23 +10,23 @@
 import UIKit
 import AVFoundation
 
-//View controller for the play audio page
+/// View controller for the play audio page
 class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
-    //stop audio button
+    /// stop audio button
     @IBOutlet weak var stopAudioButton: UIButton!
     
-    //audio player used by slow and fast audio re-play
+    /// audio player used by slow and fast audio re-play
     var avPlayer: AVAudioPlayer!
-    //audio player node used by chipmunk and darthvader effects
+    /// audio player node used by chipmunk and darthvader effects
     var avPlayerNode: AVAudioPlayerNode!
-    //audio engine used by chipmunk and darthvader effects
+    /// audio engine used by chipmunk and darthvader effects
     var avEngine: AVAudioEngine!
     
-    //information about the recorded audio file that is replayed 
-    //with the different effects
+    /// information about the recorded audio file that is replayed
+    /// with the different effects
     var receivedAudio: RecordedAudio!
     
-    //constants
+    /// constants
     let FILE_NOT_FOUND_ERROR = "File not found"
     let AUDIO_PLAY_ERROR = "Audio play failed"
     

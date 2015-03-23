@@ -8,12 +8,12 @@
 
 import Foundation
 
-// Recorded audio file information (title and path)
+/// Recorded audio file information (title and path)
 class RecordedAudio: NSObject {
-    //title
+    /// title
     var title: String!
     
-    //path
+    /// path
     var recordingFilePath: NSURL!
     
     /// initialize object
