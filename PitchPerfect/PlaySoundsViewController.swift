@@ -33,6 +33,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     /// Initialize audio re-play
     override func viewDidLoad() {
         super.viewDidLoad()
+        stopAudioButton.hidden = true
         initAudio()
     }
     
@@ -121,7 +122,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             self.avPlayer.stop()
         }
         if(self.avPlayerNode != nil) {
-            self.avPlayerNode.stop()
             self.avPlayerNode.reset()
         }
     }
@@ -142,7 +142,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             //play audio
             self.avPlayer.play()
         }
-        
     }
     
     /// play audio with variable pitch (used in chipmunk and darthvader re-play)
@@ -188,45 +187,43 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         playAudioWithEffect(auDelay);
     }
     
-    /// play audio with variable pitch (used in chipmunk and darthvader re-play)
+    /// play audio with audio effect
     ///
     /// :param: AVAudioUnit effect
     func playAudioWithEffect(effect: AVAudioUnit) {
-        if(self.avPlayer != nil) {
-            //stop audio (other audio may not be finished)
-            stopAudio()
-            // show stop audio button
-            stopAudioButton.hidden = false
-            //create audio player node feeding the record audio into
-            //the audio network
-            self.avPlayerNode=AVAudioPlayerNode()
-            //get mixer
-            var mixer = avEngine.mainMixerNode
-            //set maximum volume
-            mixer.volume = 1.0
-            //attached audio player node to audio engine
-            self.avEngine.attachNode(avPlayerNode)
-            //attach effect node to audio engine
-            self.avEngine.attachNode(effect)
-            // connect audio player node to audio effect node
-            self.avEngine.connect(avPlayerNode, to: effect, format: mixer.outputFormatForBus(0))
-            //connect audio effect node to mixer
-            self.avEngine.connect(effect, to: mixer, format: mixer.outputFormatForBus(0))
-            var error: NSError? = nil
-            //set recording file in audio player node
-            let file = AVAudioFile(forReading: receivedAudio.recordingFilePath, error: &error)
-            //asynchronously set file for audio encoding
-            self.avPlayerNode.scheduleFile(file, atTime: nil, completionHandler: audioCompleted)
-            //start audio engine
-            self.avEngine.startAndReturnError(&error)
-            //error
-            if nil != error {
-                println(error)
-                abort();
-            }
-            //play audio recording
-            self.avPlayerNode.play()
+        //stop audio (other audio may not be finished)
+        stopAudio()
+        // show stop audio button
+        self.stopAudioButton.hidden = false
+        //create audio player node feeding the record audio into
+        //the audio network
+        self.avPlayerNode=AVAudioPlayerNode()
+        //get mixer
+        var mixer = avEngine.mainMixerNode
+        //set maximum volume
+        mixer.volume = 1.0
+        //attached audio player node to audio engine
+        self.avEngine.attachNode(avPlayerNode)
+        //attach effect node to audio engine
+        self.avEngine.attachNode(effect)
+        // connect audio player node to audio effect node
+        self.avEngine.connect(avPlayerNode, to: effect, format: mixer.outputFormatForBus(0))
+        //connect audio effect node to mixer
+        self.avEngine.connect(effect, to: mixer, format: mixer.outputFormatForBus(0))
+        var error: NSError? = nil
+        //set recording file in audio player node
+        let file = AVAudioFile(forReading: receivedAudio.recordingFilePath, error: &error)
+        //asynchronously set file for audio encoding
+        self.avPlayerNode.scheduleFile(file, atTime: nil, completionHandler: audioCompleted)
+        //start audio engine
+        self.avEngine.startAndReturnError(&error)
+        //error
+        if nil != error {
+            println(error)
+            abort();
         }
+        //play audio recording
+        self.avPlayerNode.play()
     }
 
     /// Stop audio
@@ -249,7 +246,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     
     /// Hide stop button (called as completion handler by audio player node and by audioPlayerDidFinishPlaying handler)
     func audioCompleted() {
-        stopAudioButton.hidden = true
+        self.stopAudioButton.hidden = true
     }
     
     /// Hide stop audio button when audio ends playing

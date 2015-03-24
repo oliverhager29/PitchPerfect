@@ -34,6 +34,9 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     /// recording in progress label text
     let RECORDING_IN_PROGRESS = "Recording in progress"
     
+    /// record id paused label text
+    let RECORDING_IS_PAUSED = "Recording is paused"
+
     /// date format for timestamp in recording file name
     let DATE_FORMAT = "ddMMyyyy-HHmmss"
     
@@ -127,10 +130,12 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         if(audioRecorder.recording) {
             audioRecorder.pause()
             pauseResumeRecordingButton.setImage(UIImage(named: "resume"), forState:UIControlState.Normal)
+            recordingLabel.text = RECORDING_IS_PAUSED
         }
         else {
             audioRecorder.record()
             pauseResumeRecordingButton.setImage(UIImage(named: "pause"),  forState:UIControlState.Normal)
+            recordingLabel.text = RECORDING_IN_PROGRESS
         }
     }
     
