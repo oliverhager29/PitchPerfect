@@ -1,0 +1,88 @@
+1. Basic functionality
+The app contains two scenes of content: one for recording an audio file and one for playing the audio with different efffects. All UI elements (buttons and text) are appropriately formatted for iPhone porttrait layouts.
+
+The app contains the two pages of content and uses UINavigationController to navigate between these two scenes. UI elements are appropriately positioned on the screen.
+Tested
+on Simulator: iphone 4s, 5,5s, 6, 6 plus, ipad 2, ipad retina, ipad mini
+on hardware: iphone 6 plus, ipad retina
+--> Meets Specification
+
+2. Actions and Outlets
+the app ises IBAction methods to record audio and playback sounds. Labels and buttons are shown or hidden as appropriate.
+
+The app correctly connects each button to its own IBAction method. The "Recording" label and the "Stop" are hidden by default but appear when the recording is in progress.
+--> Meets specification
+
+3. AVAudionRecorder
+The first scene of the app uses AVAudioRecorder to record audio and keeps track of that data using a custom model class.
+
+The app uses AVAudioRecorder to record audio and saves it using a customer Model class (line 151 in RecordSoundsViewController.swift)
+--> Meets specification
+
+4. Delegates and Segues
+The app uses audioRecorderDidFinishRecording function (lines 142 to 162 in RecordSoundsViewController.swift) to determine when the audio has finished recording. It also programmatically triggers a segue from the first scene to the second by using the performSegueWithIdentifier function (line 154 in RecordSoundsViewController.swift).
+
+The app uses thr delegate pattern and implements the audioRecorderDidFinishREcording function. The app invokes performSegueWithIdentifier in code.
+--> Meet specification
+
+5. UINavigationController
+The app allows users to re-record audio after a recoding is complete. 
+a) The app allows the user to re-record. After touching the stop buttton the play screen is shown. The user can touch the record button (naivigation bar) in order to re-record the audio.
+b) In the first screen a pause button appears after starting the recording. Touching the pause button pauses the recording. The button image is change to a record symbol. Pressing on it resumes the recording. When the user is finished the user can press the stop button and navigates to the play screen.
+--> Exceeds specification
+
+6. Sound effects
+The second scene of the app contains the following audio effects: Chipmunk, Darth Vader, Slow and Fast.
+a) The four buttons and the associated sounds are present and work.
+b) The app show case two additional audio effects (echo and reverb)
+--> Exceeds specification
+
+7. Code improvements
+This Code Improvement document lists four task that you must complete on your own to improve the code written in this class. Your final code implements all four of the these tasks.
+All four of these tasks are implemented satisfactorily:
+a) the model class uses an initializer (lines 19 to 27 in RecordAudio.swift) and this initializer is called in RecordSoundsViewController.swift (line 151)
+b) The bug where sound effects overlap during playback is removed (in PlaySoundsViewController added invocation of stopAudio() (see lines 119 to 127) in lines 135 and 195 that stops/ resets the AVAudioPlayer and AVAudioPlayerNode).
+c) Legacy, commented-out code is deleted (done)
+d) Meaningful information, such as a "Tap to Record" button is provided to guide the end-user. There is a label "Tap to Record" below the microphone button that changes after starting "Recording in progress". If the pause button has been pressed, then label text changes to "Recording is paused" and after the "continue recording" button has been pressed the label text changes back to "Recording in progress".
+--> Meets specification
+
+8. Code Quality
+Code is at a professional quality level, using the control statements, methods, and comments appropriately and effectively. Code adheres to Swift naming and style conventions.
+
+Control statements (for, hile, if, else, switch) are used appropriately. Repeat blocks of code are contained in methods. Arguments and return values are appropriate. Code is well-commented. Code adhere to Swift style conventions.
+
+Comments:
+Every class, method and field are documented using Xcode's document standard (use Option and [left mouse button or tap] on class, method or field). Example
+    /// handle finishing of recording
+    ///
+    /// :param: AVAudioRecorder audio recorder
+    /// :param: Bool true if successfully finished, false otherwise
+    /// :returns: Nothing useful
+    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder!, successfully flag: Bool) {
+	...
+	}
+
+In methods interesting places have been commented, too.
+
+Also a README.md is in the top-level GIT directory describing the functionality
+
+Code reuse:
+There are generic play functions for AVAudioPlayer and AVAudioPlayerNode in PlaySoundsViewController.swift:
+line 190-227:
+    /// play audio with audio effect
+    ///
+    /// :param: AVAudioUnit effect
+    func playAudioWithEffect(effect: AVAudioUnit) { ... }
+
+line 129 to 145:
+    /// play audio with variable rate (used slow and fast audio re-play)
+    ///
+    /// :param: Float rate from 0 to 2.0 (slow to fast)
+    func playAudioWithVariableRate(rate: Float) { ... }
+	
+Also the stopAudio() function is invoked in each play method:
+line 119 to 127:
+    /// stop audio
+    func stopAudio() { ... }
+
+--> Meets specification
