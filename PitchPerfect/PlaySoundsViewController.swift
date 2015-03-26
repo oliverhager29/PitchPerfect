@@ -26,10 +26,6 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     /// with the different effects
     var receivedAudio: RecordedAudio!
     
-    var avAudioUnit : AVAudioUnit!
-    
-    var doNotHideStopButton = false
-    
     /// constants
     let FILE_NOT_FOUND_ERROR = "File not found"
     let AUDIO_PLAY_ERROR = "Audio play failed"
@@ -121,6 +117,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     /// stop audio
+    /// we stop AVAudioPlayer, AVAudioPlayerNode (necessary otherwise there is a lag in stoppping audio) and AVAudioEngine
     func stopAudio() {
         if(self.avPlayer != nil) {
             self.avPlayer.stop()
@@ -128,9 +125,10 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         if(self.avPlayerNode != nil) {
             self.avPlayerNode.stop()
             self.avPlayerNode.reset()
-            if(self.avAudioUnit != nil) {
-                self.avAudioUnit.reset()
-            }
+        }
+        if(self.avEngine != nil) {
+            self.avEngine.stop()
+            self.avEngine.reset()
         }
     }
 
@@ -230,44 +228,26 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             println(error)
             abort();
         }
-        self.avAudioUnit = effect
         //play audio recording
         self.avPlayerNode.play()
     }
 
-    /// Stop audio
+    /// Stop audio when stop audio button is pressed
     ///
     /// :param: UIButton pressed stop audio button
     @IBAction func stop(sender: UIButton) {
-        if(self.doNotHideStopButton) {
-            self.doNotHideStopButton = false
-        }
-        else {
-            self.stopAudioButton.hidden = true
-        }
-        if(self.avPlayer != nil) {
-            self.avPlayer.stop()
-        }
-        if(self.avEngine != nil) {
-            self.avEngine.stop()
-            self.avEngine.reset()
-        }
-        if(self.avPlayerNode != nil) {
-            self.avPlayerNode.stop()
-            self.avPlayerNode.reset()
-            if(self.avAudioUnit != nil) {
-                self.avAudioUnit.reset()
-            }
-        }
+        self.stopAudioButton.hidden = true
+        stopAudio();
     }
     
-    /// Hide stop button (called as completion handler by audio player node and by audioPlayerDidFinishPlaying handler)
+    /// Hide stop button after the audio has been completed (without pressing stop button).
+    /// It is called as completion handler by audio player node and by audioPlayerDidFinishPlaying handler.
     func audioCompleted() {
         self.stopAudioButton.hidden = true
     }
     
     /// Hide stop audio button when audio ends playing
-    /// :param: AVAudioPlaer! audio player
+    /// :param: AVAudioPlayer! audio player
     /// :param: Bool true if audio has been played successfully, false otheriwse
     func audioPlayerDidFinishPlaying(player: AVAudioPlayer!, successfully flag: Bool) {
         if(flag) {
