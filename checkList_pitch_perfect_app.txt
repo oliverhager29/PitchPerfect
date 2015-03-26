@@ -1,3 +1,7 @@
+*** Update ***
+Now I also stop and reset the AVAudioEngine. I have to still stop/reset the AVAudioPlayerNode because otherwise the stopping audio is lagging. I tested the fix on a hardware iphone 6 plus also pressing repeatedly echo and fast play.
+
+
 1. Basic functionality
 The app contains two scenes of content: one for recording an audio file and one for playing the audio with different efffects. All UI elements (buttons and text) are appropriately formatted for iPhone porttrait layouts.
 
@@ -41,7 +45,7 @@ b) The app show case two additional audio effects (echo and reverb)
 This Code Improvement document lists four task that you must complete on your own to improve the code written in this class. Your final code implements all four of the these tasks.
 All four of these tasks are implemented satisfactorily:
 a) the model class uses an initializer (lines 19 to 27 in RecordAudio.swift) and this initializer is called in RecordSoundsViewController.swift (line 151)
-b) The bug where sound effects overlap during playback is removed (in PlaySoundsViewController added invocation of stopAudio() (see lines 119 to 127) in lines 135 and 195 that stops/ resets the AVAudioPlayer and AVAudioPlayerNode).
+b) The bug where sound effects overlap during playback is removed (in PlaySoundsViewController added invocation of stopAudio() (see lines 119 to 133) in lines 141 and 201 that stops/ resets the AVAudioPlayer and AVAudioPlayerNode).
 c) Legacy, commented-out code is deleted (done)
 d) Meaningful information, such as a "Tap to Record" button is provided to guide the end-user. There is a label "Tap to Record" below the microphone button that changes after starting "Recording in progress". If the pause button has been pressed, then label text changes to "Recording is paused" and after the "continue recording" button has been pressed the label text changes back to "Recording in progress".
 --> Meets specification
@@ -68,13 +72,13 @@ Also a README.md is in the top-level GIT directory describing the functionality
 
 Code reuse:
 There are generic play functions for AVAudioPlayer and AVAudioPlayerNode in PlaySoundsViewController.swift:
-line 190-227:
+line 196-233:
     /// play audio with audio effect
     ///
     /// :param: AVAudioUnit effect
     func playAudioWithEffect(effect: AVAudioUnit) { ... }
 
-line 129 to 145:
+line 135 to 151:
     /// play audio with variable rate (used slow and fast audio re-play)
     ///
     /// :param: Float rate from 0 to 2.0 (slow to fast)
