@@ -26,6 +26,10 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     /// with the different effects
     var receivedAudio: RecordedAudio!
     
+    var avAudioUnit : AVAudioUnit!
+    
+    var doNotHideStopButton = false
+    
     /// constants
     let FILE_NOT_FOUND_ERROR = "File not found"
     let AUDIO_PLAY_ERROR = "Audio play failed"
@@ -122,7 +126,11 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             self.avPlayer.stop()
         }
         if(self.avPlayerNode != nil) {
+            self.avPlayerNode.stop()
             self.avPlayerNode.reset()
+            if(self.avAudioUnit != nil) {
+                self.avAudioUnit.reset()
+            }
         }
     }
 
@@ -132,7 +140,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     func playAudioWithVariableRate(rate: Float) {
         if(self.avPlayer != nil) {
             //stop audio (other audio may not be finished)
-            stopAudio()
+            stopAudio();
             // show stop audio button
             stopAudioButton.hidden = false
             //set audio player rate
@@ -222,6 +230,7 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
             println(error)
             abort();
         }
+        self.avAudioUnit = effect
         //play audio recording
         self.avPlayerNode.play()
     }
@@ -230,7 +239,12 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
     ///
     /// :param: UIButton pressed stop audio button
     @IBAction func stop(sender: UIButton) {
-        self.stopAudioButton.hidden = true
+        if(self.doNotHideStopButton) {
+            self.doNotHideStopButton = false
+        }
+        else {
+            self.stopAudioButton.hidden = true
+        }
         if(self.avPlayer != nil) {
             self.avPlayer.stop()
         }
@@ -241,6 +255,9 @@ class PlaySoundsViewController: UIViewController, AVAudioPlayerDelegate {
         if(self.avPlayerNode != nil) {
             self.avPlayerNode.stop()
             self.avPlayerNode.reset()
+            if(self.avAudioUnit != nil) {
+                self.avAudioUnit.reset()
+            }
         }
     }
     
